@@ -7,7 +7,7 @@ A free, browser-based grade planner. Add courses and individual assessments, ent
 1. Download or clone this folder.
 2. In a terminal opened inside the folder, run `python -m http.server 8000`.
 3. Visit `http://localhost:8000` in a modern browser.
-4. Your workspace starts empty. Add your own course, then add its assessments.
+4. On first visit, complete the profile form (name and grade/year; school name is optional) and accept the Terms of Use & Privacy Notice. Then add your own courses and assessments.
 
 No build step, package manager, API key, or backend is required.
 
@@ -33,9 +33,15 @@ The app prevents planned assessment weights from adding up to more than 100%. It
 
 ## Privacy and storage
 
-Each visitor gets a separate workspace because course data is stored in that visitor's browser `localStorage`. Changes are saved when a course or assessment is added, edited, or deleted. The site does not send grades to a server, and there is no shared sample gradebook.
+Each visitor gets a separate workspace because profile details and course data are stored in that visitor's browser `localStorage`. The first-visit Terms of Use & Privacy Notice explains what is stored and requires acceptance before continuing. Changes are saved when a course or assessment is added, edited, or deleted. This static version does not upload profile details or grades to a GradePath account or database, and it does not sell or publish that information to the general public. The website host may process ordinary technical request information when the site loads; this is separate from the profile and grade data entered into the tool.
 
 This is browser-specific storage, not an online user account: the same person will not automatically see their data on another device or in another browser. Clearing browser data may erase saved courses, so use **Export** in the top-right corner to download a JSON backup and use **Import** to restore it on another device. If multiple people use the same browser profile, they will share that browser's GradePath data. True account-based syncing between devices requires adding an authentication and database service.
+
+## Profile and terms
+
+Visitors can add a name, grade/year and optional school name through the first-visit profile and Terms of Use popup. They can edit this profile later using the profile control in the top bar. The terms notice explains local browser storage, shared-device risks, backup/export, no cloud syncing, and the no-sale statement.
+
+The course header has a visible **Delete course** action with a confirmation prompt.
 
 ## Files
 

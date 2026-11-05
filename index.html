@@ -20,7 +20,11 @@
         <span>gradepath<span class="brand-period">.</span></span>
       </a>
       <div class="topbar-right">
-        <span class="local-save" id="saveStatus" aria-live="polite" title="Your courses are saved privately in this browser. Other visitors have separate data."><span class="save-dot"></span><span id="saveStatusText">Auto-saved privately</span></span>
+        <button class="profile-chip" id="profileBtn" type="button" aria-label="View or edit your profile" title="View or edit your profile">
+          <span class="profile-avatar" id="profileAvatar">?</span>
+          <span class="profile-chip-copy"><strong id="profileNameText">Set up profile</strong><small id="profileMetaText">Your details</small></span>
+        </button>
+        <span class="local-save" id="saveStatus" aria-live="polite" title="Your profile and courses are saved privately in this browser. Other visitors using their own browser have separate data."><span class="save-dot"></span><span id="saveStatusText">Auto-saved privately</span></span>
         <button class="icon-button" id="exportBtn" type="button" title="Export your data" aria-label="Export your data">
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m0 0 4-4m-4 4-4-4M4 17v3h16v-3"/></svg>
         </button>
@@ -112,7 +116,7 @@
                   </div>
                   <div class="course-menu-wrap">
                     <button class="text-button" id="editCourseBtn" type="button">Edit course</button>
-                    <button class="more-button" id="deleteCourseBtn" type="button" aria-label="Delete course" title="Delete course">···</button>
+                    <button class="delete-course-button" id="deleteCourseBtn" type="button">Delete course</button>
                   </div>
                 </div>
                 <div class="course-metrics">
@@ -193,10 +197,68 @@
           <p>Your workspace is empty until you add your classes. Add a course, then enter each test, quiz, assignment or project and its weight. GradePath will calculate your standing and the scores you need to reach your goal.</p>
           <button class="primary-button" id="emptyAddCourseBtn" type="button"><span class="button-plus">+</span> Add your first course</button>
         </section>
-        <footer class="main-footer"><span>Made for the goals you're working toward.</span><span>GradePath <b>·</b> Your grades are saved privately in this browser.</span></footer>
+        <footer class="main-footer"><span>Made for the goals you're working toward.</span><span class="footer-right"> <button class="footer-link" id="openTermsBtn" type="button">Terms of Use &amp; Privacy</button><span>GradePath <b>·</b> Your grades are saved privately in this browser.</span></span></footer>
       </main>
     </div>
   </div>
+
+  <dialog class="modal profile-modal" id="profileDialog" aria-labelledby="profileDialogTitle">
+    <form id="profileForm" method="dialog" novalidate>
+      <div class="modal-header">
+        <div><div class="eyebrow">YOUR GRADEPATH PROFILE</div><h2 id="profileDialogTitle">Welcome to GradePath</h2><p class="modal-intro">Add your details to personalize your workspace. You can edit them later.</p></div>
+        <button class="modal-close" id="profileCloseBtn" type="button" data-close="profileDialog" aria-label="Close profile" hidden>×</button>
+      </div>
+      <label class="field-label" for="profileNameInput">Your name</label>
+      <input class="text-input" id="profileNameInput" maxlength="60" autocomplete="name" placeholder="e.g. Alex Morgan" required>
+      <label class="field-label" for="profileGradeInput">Your grade / year</label>
+      <input class="text-input" id="profileGradeInput" maxlength="40" placeholder="e.g. Grade 10 or Year 1" required>
+      <label class="field-label" for="profileSchoolInput">School name <span class="optional-label">(optional)</span></label>
+      <input class="text-input" id="profileSchoolInput" maxlength="100" autocomplete="organization" placeholder="e.g. Central High School">
+
+      <div class="privacy-notice">
+        <div class="privacy-notice-title"><span aria-hidden="true">🔒</span> Your information will never be sold to the general public.</div>
+        <p>The name, grade, school and course information you enter are saved in this browser on this device. This version does not upload those details to a GradePath account or database.</p>
+      </div>
+
+      <section class="terms-preview" aria-labelledby="termsPreviewTitle">
+        <div class="terms-preview-heading"><h3 id="termsPreviewTitle">Terms of Use &amp; Privacy Notice</h3><span>PLEASE READ</span></div>
+        <div class="terms-preview-copy">
+          <p><strong>1. What GradePath does.</strong> GradePath is an independent study-planning tool. It is not your school’s official gradebook and is not operated by your school.</p>
+          <p><strong>2. Accuracy.</strong> Results depend on the grades, assessment weights and grading rules you enter. Check calculations and course policies with your teacher or school before relying on them.</p>
+          <p><strong>3. Your information.</strong> We do not sell or publish the profile or grade information you enter to the general public. In this version, this information is stored in your browser and is not uploaded to a GradePath database. The website host may process ordinary technical request information when the site loads; that is separate from the profile and grades you enter.</p>
+          <p><strong>4. Your device.</strong> Anyone with access to the same browser profile or device may be able to see locally saved information. Do not use a shared device for information you want to keep private. Clearing browser data can erase your profile and courses. Use Export to keep a backup.</p>
+          <p><strong>5. No account sync.</strong> Your information does not automatically transfer to another browser or device. This version has no sign-in system or cloud account.</p>
+        </div>
+      </section>
+      <label class="terms-agreement" for="termsAgree">
+        <input id="termsAgree" type="checkbox" required>
+        <span>I have read and agree to the Terms of Use &amp; Privacy Notice.</span>
+      </label>
+      <p class="form-error" id="profileFormError" role="alert"></p>
+      <div class="modal-actions">
+        <button class="secondary-button" id="cancelProfileBtn" type="button" data-close="profileDialog" hidden>Cancel</button>
+        <button class="primary-button" id="saveProfileBtn" type="submit">Agree &amp; save profile</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog class="modal terms-modal" id="termsDialog" aria-labelledby="termsDialogTitle">
+    <div class="modal-content">
+      <div class="modal-header"><div><div class="eyebrow">GRADEPATH</div><h2 id="termsDialogTitle">Terms of Use &amp; Privacy</h2></div><button class="modal-close" type="button" data-close="termsDialog" aria-label="Close terms">×</button></div>
+      <div class="privacy-notice">
+        <div class="privacy-notice-title"><span aria-hidden="true">🔒</span> Your information will never be sold to the general public.</div>
+        <p>Profile details and grades entered in this version stay in this browser’s local storage and are not uploaded to a GradePath account or database.</p>
+      </div>
+      <div class="terms-full-copy">
+        <h3>1. What GradePath does</h3><p>GradePath is an independent study-planning tool. It is not an official school gradebook and is not operated by your school.</p>
+        <h3>2. Accuracy and responsibility</h3><p>Calculations depend on the grades, assessment weights and grading rules you enter. The tool may not account for category weighting, dropped assignments, curves, extra credit or other school-specific rules. Check important results with your teacher or school. You are responsible for the information you enter and for checking the results before relying on them.</p>
+        <h3>3. Privacy and information you enter</h3><p>GradePath does not sell or publish the profile or grade information you enter to the general public. In this version, your name, grade, school and course information are stored locally in this browser and are not uploaded to a GradePath account or database. The static website host may process ordinary technical request information when the website loads; this is separate from the profile and grades you enter.</p>
+        <h3>4. Shared devices and backups</h3><p>Anyone with access to the same browser profile or device may be able to see locally saved information. Avoid entering information you do not want another user of that device to see. Clearing browser data can erase your profile and courses. Use the Export button to download a backup and keep it somewhere private.</p>
+        <h3>5. No account or cross-device sync</h3><p>This version does not provide sign-in, cloud storage or automatic syncing. Your information stays in the browser where you entered it unless you export and import a backup yourself.</p>
+      </div>
+      <div class="modal-actions"><button class="primary-button" type="button" data-close="termsDialog">Close</button></div>
+    </div>
+  </dialog>
 
   <dialog class="modal" id="courseDialog">
     <form id="courseForm" method="dialog">

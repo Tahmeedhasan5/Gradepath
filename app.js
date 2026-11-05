@@ -2,10 +2,12 @@
   'use strict';
 
   const STORAGE_KEY = 'gradepath-v1';
+  const PROFILE_STORAGE_KEY = 'gradepath-profile-v1';
+  const TERMS_STORAGE_KEY = 'gradepath-terms-accepted-v1';
   const COLORS = ['purple', 'blue', 'green', 'orange', 'pink'];
   const $ = (selector, root = document) => root.querySelector(selector);
   const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
-  const state = { courses: [], selectedCourseId: null, editingCourseId: null, editingAssessmentId: null, toastTimer: null };
+  const state = { courses: [], profile: { name: '', grade: '', school: '' }, termsAccepted: false, selectedCourseId: null, editingCourseId: null, editingAssessmentId: null, toastTimer: null };
 
   const makeId = () => (window.crypto && crypto.randomUUID ? crypto.randomUUID() : `id-${Date.now()}-${Math.random().toString(16).slice(2)}`);
 
@@ -38,6 +40,90 @@
       showToast('Your saved data could not be read. A fresh workspace is ready; your previous browser data was not overwritten.');
       setSaveStatus('Could not read saved data', 'error');
     }
+  }
+
+  function loadProfile() {
+    try {
+      const rawProfile = localStorage.getItem(PROFILE_STORAGE_KEY);
+      const parsed = rawProfile ? JSON.parse(rawProfile) : {};
+      state.profile = {
+        name: typeof parsed.name === 'string' ? parsed.name.slice(0, 60) : '',
+        grade: typeof parsed.grade === 'string' ? parsed.grade.slice(0, 40) : '',
+        school: typeof parsed.school === 'string' ? parsed.school.slice(0, 100) : ''
+      };
+      state.termsAccepted = localStorage.getItem(TERMS_STORAGE_KEY) === 'accepted-v1';
+    } catch (error) {
+      console.error('Could not load the GradePath profile:', error);
+      state.profile = { name: '', grade: '', school: '' };
+      state.termsAccepted = false;
+      setSaveStatus('Profile could not be read', 'error');
+    }
+  }
+
+  function saveProfileToStorage() {
+    try {
+      localStorage.setItem(PROFILE_STORAGE_KEY, JSON.stringify(state.profile));
+      if (state.termsAccepted) localStorage.setItem(TERMS_STORAGE_KEY, 'accepted-v1');
+      return true;
+    } catch (error) {
+      console.error('Could not save the GradePath profile:', error);
+      setSaveStatus('Profile not saved', 'error');
+      showToast('Your browser could not save the profile. It may not remain after you close this page.');
+      return false;
+    }
+  }
+
+  function renderProfile() {
+    const profile = state.profile;
+    const displayName = profile.name || 'Set up profile';
+    const details = [profile.grade, profile.school].filter(Boolean).join(' · ') || 'Your details';
+    $('#profileNameText').textContent = displayName;
+    $('#profileMetaText').textContent = details;
+    $('#profileAvatar').textContent = profile.name ? profile.name.trim().charAt(0).toUpperCase() : '?';
+    $('#profileBtn').title = profile.name ? `Profile: ${profile.name}. Click to edit.` : 'Set up your profile';
+  }
+
+  function openProfileDialog() {
+    $('#profileNameInput').value = state.profile.name;
+    $('#profileGradeInput').value = state.profile.grade;
+    $('#profileSchoolInput').value = state.profile.school;
+    $('#profileFormError').textContent = '';
+    const firstSetup = !state.termsAccepted;
+    $('#termsAgree').checked = state.termsAccepted;
+    $('#termsAgree').disabled = state.termsAccepted;
+    $('#termsAgree').required = firstSetup;
+    $('#profileCloseBtn').hidden = firstSetup;
+    $('#cancelProfileBtn').hidden = firstSetup;
+    $('#saveProfileBtn').textContent = firstSetup ? 'Agree & save profile' : 'Save profile';
+    $('#profileDialogTitle').textContent = firstSetup ? 'Welcome to GradePath' : 'Edit your profile';
+    $('#profileDialog').showModal();
+    if (firstSetup) {
+      $('#profileDialog').dataset.requiredSetup = 'true';
+    } else {
+      delete $('#profileDialog').dataset.requiredSetup;
+    }
+    setTimeout(() => $('#profileNameInput').focus(), 50);
+  }
+
+  function handleProfileSubmit(event) {
+    event.preventDefault();
+    const name = $('#profileNameInput').value.trim();
+    const grade = $('#profileGradeInput').value.trim();
+    const school = $('#profileSchoolInput').value.trim();
+    const error = $('#profileFormError');
+    if (!name) { error.textContent = 'Enter your name.'; return; }
+    if (!grade) { error.textContent = 'Enter your grade or year.'; return; }
+    if (!state.termsAccepted && !$('#termsAgree').checked) {
+      error.textContent = 'You must accept the Terms of Use & Privacy Notice to continue.';
+      return;
+    }
+
+    state.profile = { name, grade, school };
+    if (!state.termsAccepted) state.termsAccepted = true;
+    const saved = saveProfileToStorage();
+    renderProfile();
+    $('#profileDialog').close();
+    if (saved) showToast('Profile saved on this device.');
   }
 
   function isValidCourse(course) {
@@ -417,7 +503,7 @@
   }
 
   function exportData() {
-    const payload = { app: 'GradePath', version: 2, exportedAt: new Date().toISOString(), courses: state.courses };
+    const payload = { app: 'GradePath', version: 3, exportedAt: new Date().toISOString(), profile: state.profile, courses: state.courses };
     const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const anchor = document.createElement('a');
@@ -442,8 +528,17 @@
       if (!window.confirm(`Import ${normalized.length} course(s)? This will replace the courses currently saved on this device.`)) return;
       state.courses = normalized;
       state.selectedCourseId = state.courses[0]?.id || null;
+      if (!Array.isArray(content) && content.profile && typeof content.profile === 'object') {
+        state.profile = {
+          name: typeof content.profile.name === 'string' ? content.profile.name.slice(0, 60) : '',
+          grade: typeof content.profile.grade === 'string' ? content.profile.grade.slice(0, 40) : '',
+          school: typeof content.profile.school === 'string' ? content.profile.school.slice(0, 100) : ''
+        };
+        saveProfileToStorage();
+      }
       saveData();
       render();
+      renderProfile();
       showToast('Backup imported.');
     } catch (error) {
       showToast(error.message || 'Could not import that file.');
@@ -459,6 +554,10 @@
     $('#addAssessmentBottomBtn').addEventListener('click', () => openAssessmentDialog());
     $('#editCourseBtn').addEventListener('click', () => { const course = getSelectedCourse(); if (course) openCourseDialog(course); });
     $('#deleteCourseBtn').addEventListener('click', deleteCourse);
+    $('#profileBtn').addEventListener('click', openProfileDialog);
+    $('#profileForm').addEventListener('submit', handleProfileSubmit);
+    $('#openTermsBtn').addEventListener('click', () => $('#termsDialog').showModal());
+    $('#profileDialog').addEventListener('cancel', event => { if (!state.termsAccepted) event.preventDefault(); });
     $('#exportBtn').addEventListener('click', exportData);
     $('#importFile').addEventListener('change', importData);
     $('#printBtn').addEventListener('click', () => window.print());
@@ -512,8 +611,11 @@
   function init() {
     bindEvents();
     loadData();
+    loadProfile();
     render();
-    if (state.courses.length >= 0 && !$('#saveStatus')?.dataset.status) setSaveStatus('Saved privately on this device', 'saved');
+    renderProfile();
+    if (!$('#saveStatus')?.dataset.status) setSaveStatus('Saved privately on this device', 'saved');
+    if (!state.termsAccepted || !state.profile.name || !state.profile.grade) openProfileDialog();
   }
 
   document.addEventListener('DOMContentLoaded', init);

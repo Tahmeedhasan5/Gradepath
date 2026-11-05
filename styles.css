@@ -5,3 +5,43 @@
 @media(max-width:680px){.topbar{height:62px;padding:0 16px}.brand{font-size:19px}.local-save{font-size:0;gap:0}.save-dot{margin-right:3px}.layout{display:block;min-height:calc(100vh - 62px)}.sidebar{width:auto;min-height:0;border-right:0;border-bottom:1px solid var(--line);padding:10px 15px;display:block;white-space:nowrap;overflow-x:auto}.sidebar>.sidebar-label,.sidebar-heading-row,.sidebar-spacer,.sidebar-tip,.sidebar-footer,.nav-item,.add-course-link{display:none}.course-nav{display:flex;flex-direction:row;gap:6px}.course-nav-item{width:auto;max-width:170px;flex:0 0 auto;height:35px;padding:0 10px;background:#f7f7fb}.course-nav-item.active{background:var(--purple-soft)}.main-content{padding:26px 15px 20px}.welcome-row{align-items:flex-start}.welcome-row h1{font-size:27px}.welcome-copy{max-width:390px;line-height:1.5;font-size:11px}.welcome-row>.primary-button{margin-top:14px;padding:0 10px;min-height:36px;font-size:10px}.stats-grid{gap:8px;margin-bottom:29px}.stat-card{min-height:106px;padding:12px}.stat-value{font-size:23px}.stat-note{font-size:9px}.section-heading{align-items:flex-start;flex-wrap:wrap}.section-heading h2{font-size:19px}.section-actions{width:100%;justify-content:flex-end}.course-card{padding:16px 14px}.course-title-line h3{font-size:14px}.course-term{display:none}.course-menu-wrap{gap:8px}.text-button{font-size:10px}.course-metrics{gap:9px;margin-top:18px;padding-top:15px}.metric-number{font-size:22px}.metric-number span{font-size:13px}.metric-label{font-size:8px}.metric-foot{font-size:8px;white-space:normal}.metric-inline strong{font-size:10px}.progress-track{margin-top:8px}.assessment-heading{padding:16px 14px 12px}.assessment-table th{padding:9px 10px}.assessment-table th:first-child,.assessment-table td:first-child{padding-left:14px}.assessment-table td{padding:11px 10px}.table-footer{padding:10px 14px}.planner-column{grid-template-columns:1fr}.next-card{grid-column:auto}.main-footer{font-size:8px;line-height:1.5}.empty-state{padding:42px 18px}}
 @media(max-width:420px){.stats-grid{grid-template-columns:1fr 1fr}.stat-label{font-size:8px;letter-spacing:.6px}.section-actions .secondary-button{font-size:10px;padding:0 9px}.section-actions .small-primary{font-size:10px;padding:0 9px}.course-metrics{grid-template-columns:1fr 1fr}.progress-metric{grid-column:span 2;grid-row:2}.target-metric{grid-column:2;grid-row:1}.main-footer{flex-direction:column;gap:3px}.form-grid-two{gap:9px}.modal form{padding:19px}}
 @media print{body{background:#fff}.topbar,.sidebar,.welcome-row>.primary-button,.section-actions,.course-menu-wrap,.planner-column,.main-footer,.row-edit,.table-footer button{display:none!important}.layout{display:block}.main-content{padding:0;max-width:none}.topbar{display:none}.stats-grid{grid-template-columns:repeat(4,1fr)}.course-layout{display:block}.course-card,.assessment-card{box-shadow:none;break-inside:avoid}.assessment-table td,.assessment-table th{font-size:9px}.course-section{display:block}}
+
+
+/* Profile, privacy notice, terms popup, and explicit course deletion */
+.profile-chip{display:flex;align-items:center;gap:9px;border:1px solid var(--line);background:#fff;border-radius:11px;padding:5px 10px 5px 6px;color:var(--ink);text-align:left;min-width:0}
+.profile-chip:hover{border-color:#d7d2ff;background:#fcfbff}
+.profile-avatar{width:29px;height:29px;display:grid;place-items:center;border-radius:9px;background:var(--purple-soft);color:var(--purple);font:800 13px 'Segoe UI',Arial,sans-serif;flex:0 0 auto}
+.profile-chip-copy{display:flex;flex-direction:column;gap:1px;min-width:0}
+.profile-chip-copy strong{font-size:10px;max-width:130px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.profile-chip-copy small{font-size:9px;color:var(--muted);max-width:160px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.delete-course-button{border:1px solid #f1dfe2;background:#fff8f8;color:#bd5360;border-radius:8px;padding:7px 10px;font-size:10px;font-weight:700;white-space:nowrap}
+.delete-course-button:hover{background:#fff0f1;border-color:#e9c8cd}
+.modal-intro{font-size:11px;color:#85899b;line-height:1.5;margin:6px 0 0;max-width:360px}
+.profile-modal{width:min(560px,calc(100% - 28px))}
+.profile-modal form{padding:25px}
+.privacy-notice{margin:17px 0 13px;padding:13px 14px;border:1px solid #dcefe6;background:#f1faf5;border-radius:11px}
+.privacy-notice-title{font-size:12px;font-weight:800;color:#237b5b;line-height:1.45}
+.privacy-notice-title span{margin-right:5px}
+.privacy-notice p{font-size:10px;line-height:1.6;color:#5e7e70;margin:6px 0 0}
+.terms-preview{border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.terms-preview-heading{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:11px 13px;background:#fafafd;border-bottom:1px solid var(--line)}
+.terms-preview-heading h3{font:800 11px 'Segoe UI',Arial,sans-serif;margin:0}
+.terms-preview-heading span{font-size:8px;letter-spacing:.8px;font-weight:800;color:#969aac}
+.terms-preview-copy{max-height:145px;overflow:auto;padding:5px 13px 10px}
+.terms-preview-copy p,.terms-full-copy p{font-size:10px;line-height:1.6;color:#777d91;margin:8px 0}
+.terms-preview-copy strong{color:#4a5066}
+.terms-agreement{display:flex;align-items:flex-start;gap:9px;margin-top:14px;font-size:10px;line-height:1.5;color:#555b70;cursor:pointer}
+.terms-agreement input{width:15px;height:15px;margin:0;accent-color:var(--purple);flex:0 0 auto}
+.terms-modal{width:min(560px,calc(100% - 28px))}
+.modal-content{padding:24px}
+.terms-full-copy{max-height:48vh;overflow:auto;padding-right:5px}
+.terms-full-copy h3{font:800 11px 'Segoe UI',Arial,sans-serif;color:#454b60;margin:15px 0 4px}
+.terms-full-copy p{margin:4px 0 10px}
+.footer-right{display:flex;align-items:center;gap:14px}
+.footer-link{border:0;background:transparent;color:var(--purple);font-size:9px;font-weight:700;padding:0}
+.footer-link:hover{text-decoration:underline}
+@media(max-width:680px){.topbar-right{gap:7px}.profile-chip{padding:4px 6px 4px 4px}.profile-avatar{width:28px;height:28px}.profile-chip-copy{display:none}.local-save{display:none}.footer-right{align-items:flex-start;flex-direction:column;gap:5px}.delete-course-button{padding:6px 8px;font-size:9px}.profile-modal form{padding:19px}}
+@media print{.profile-chip,.delete-course-button,.footer-link{display:none!important}}
+
+/* Ensure hidden controls stay hidden even when component classes define display. */
+[hidden]{display:none!important}
