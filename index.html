@@ -1,0 +1,242 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f6f7fb">
+  <meta name="description" content="GradePath helps students track course grades, calculate the scores they need, and plan for their target grade.">
+  <title>GradePath — Know what you need</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="styles.css">
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <a class="brand" href="#home" aria-label="GradePath home">
+        <span class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 36 36" fill="none"><path d="M7 25.5 14.2 18l5.1 4.5L29 10" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M22.5 10H29v6.5" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </span>
+        <span>gradepath<span class="brand-period">.</span></span>
+      </a>
+      <div class="topbar-right">
+        <span class="local-save" id="saveStatus" aria-live="polite" title="Your courses are saved privately in this browser. Other visitors have separate data."><span class="save-dot"></span><span id="saveStatusText">Auto-saved privately</span></span>
+        <button class="icon-button" id="exportBtn" type="button" title="Export your data" aria-label="Export your data">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m0 0 4-4m-4 4-4-4M4 17v3h16v-3"/></svg>
+        </button>
+        <label class="icon-button" for="importFile" title="Import a backup" aria-label="Import a backup">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 16V4m0 0L8 8m4-4 4 4M4 17v3h16v-3"/></svg>
+          <input id="importFile" type="file" accept="application/json,.json" hidden>
+        </label>
+      </div>
+    </header>
+
+    <div class="layout">
+      <aside class="sidebar" aria-label="Main navigation">
+        <div class="sidebar-label">WORKSPACE</div>
+        <button class="nav-item active" id="overviewNav" type="button">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="13.5" width="7" height="7" rx="1.5"/></svg>
+          Overview
+        </button>
+        <div class="sidebar-heading-row">
+          <span class="sidebar-label">MY COURSES</span>
+          <button class="tiny-icon-button" id="sidebarAddBtn" type="button" aria-label="Add course" title="Add course">+</button>
+        </div>
+        <nav class="course-nav" id="courseList" aria-label="Courses"></nav>
+        <button class="add-course-link" id="addCourseLink" type="button"><span>+</span> Add a course</button>
+        <div class="sidebar-spacer"></div>
+        <div class="sidebar-tip">
+          <div class="tip-icon">✦</div>
+          <strong>A little progress adds up.</strong>
+          <p>Keep your grades up to date to get the most useful predictions.</p>
+        </div>
+        <div class="sidebar-footer">GRADEPATH <span>·</span> YOUR STUDY COMPANION</div>
+      </aside>
+
+      <main class="main-content" id="mainContent">
+        <section class="welcome-row">
+          <div>
+            <div class="eyebrow" id="currentDate">YOUR ACADEMIC OVERVIEW</div>
+            <h1>Make your next grade <span class="heading-accent">a plan.</span></h1>
+            <p class="welcome-copy">Know where you stand, see what you need, and take the guesswork out of your goals.</p>
+          </div>
+          <button class="primary-button" id="addCourseMainBtn" type="button"><span class="button-plus">+</span> Add course</button>
+        </section>
+
+
+        <section class="stats-grid" id="statsGrid" aria-label="Grade overview">
+          <article class="stat-card">
+            <div class="stat-top"><span class="stat-label">COURSES TRACKED</span><span class="stat-icon purple">▤</span></div>
+            <div class="stat-value" id="statCourses">1</div>
+            <div class="stat-note">Keep every class in one place</div>
+          </article>
+          <article class="stat-card">
+            <div class="stat-top"><span class="stat-label">CURRENT AVERAGE</span><span class="stat-icon blue">↗</span></div>
+            <div class="stat-value" id="statAverage">87.3<span class="stat-unit">%</span></div>
+            <div class="stat-note">Across courses with graded work</div>
+          </article>
+          <article class="stat-card">
+            <div class="stat-top"><span class="stat-label">ASSESSMENTS LEFT</span><span class="stat-icon amber">◷</span></div>
+            <div class="stat-value" id="statRemaining">4</div>
+            <div class="stat-note">Upcoming tests, tasks and exams</div>
+          </article>
+          <article class="stat-card stat-card-highlight">
+            <div class="stat-top"><span class="stat-label">YOUR MAIN GOAL</span><span class="stat-icon green">◎</span></div>
+            <div class="stat-value" id="statGoal">90<span class="stat-unit">%</span></div>
+            <div class="stat-note" id="statGoalNote">One step at a time</div>
+          </article>
+        </section>
+
+        <section class="course-section" id="courseSection">
+          <div class="section-heading">
+            <div>
+              <div class="eyebrow">YOUR CLASSES</div>
+              <h2>Course planner</h2>
+            </div>
+            <div class="section-actions">
+              <button class="secondary-button" id="printBtn" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 8V3h10v5M7 17H5a2 2 0 0 1-2-2v-4a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2h-2M7 14h10v7H7z"/></svg> Print summary</button>
+              <button class="primary-button small-primary" id="addAssessmentBtn" type="button"><span class="button-plus">+</span> Add assessment</button>
+            </div>
+          </div>
+
+          <div class="course-layout" id="courseLayout">
+            <div class="course-main-column">
+              <article class="course-card" id="selectedCourseCard">
+                <div class="course-card-header">
+                  <div class="course-title-wrap">
+                    <span class="course-color-dot" id="selectedCourseDot"></span>
+                    <div>
+                      <div class="course-title-line"><h3 id="selectedCourseName">Biology 101</h3><span class="course-term" id="selectedCourseTerm">CURRENT COURSE</span></div>
+                      <p id="selectedCourseSub">Your progress at a glance</p>
+                    </div>
+                  </div>
+                  <div class="course-menu-wrap">
+                    <button class="text-button" id="editCourseBtn" type="button">Edit course</button>
+                    <button class="more-button" id="deleteCourseBtn" type="button" aria-label="Delete course" title="Delete course">···</button>
+                  </div>
+                </div>
+                <div class="course-metrics">
+                  <div class="metric-block">
+                    <span class="metric-label">CURRENT GRADE</span>
+                    <strong class="metric-number" id="currentGrade">87.3<span>%</span></strong>
+                    <span class="metric-foot" id="gradedWeightText">Based on 45% of course weight</span>
+                  </div>
+                  <div class="metric-divider"></div>
+                  <div class="metric-block progress-metric">
+                    <div class="metric-inline"><span class="metric-label">COURSE GRADED</span><strong id="courseProgressText">45%</strong></div>
+                    <div class="progress-track"><div class="progress-fill" id="courseProgressBar" style="width:45%"></div></div>
+                    <span class="metric-foot" id="weightPlanText">100% of course weight planned</span>
+                  </div>
+                  <div class="metric-divider"></div>
+                  <div class="metric-block target-metric">
+                    <span class="metric-label">YOUR TARGET</span>
+                    <strong class="metric-number target-number" id="courseTargetDisplay">90<span>%</span></strong>
+                    <span class="metric-foot" id="targetStatusText">You're working toward it</span>
+                  </div>
+                </div>
+              </article>
+
+              <article class="assessment-card">
+                <div class="assessment-heading">
+                  <div><h3>Assessments</h3><p>Every test, quiz, assignment and project in this course.</p></div>
+                  <span class="item-count" id="assessmentCount">7 ITEMS</span>
+                </div>
+                <div class="table-wrap" id="assessmentTableWrap">
+                  <table class="assessment-table">
+                    <thead><tr><th>ASSESSMENT</th><th>TYPE</th><th>WEIGHT</th><th>GRADE</th><th>STATUS</th><th><span class="sr-only">Actions</span></th></tr></thead>
+                    <tbody id="assessmentRows"></tbody>
+                  </table>
+                </div>
+                <div class="table-footer">
+                  <span id="weightFooterText">100% of course weight assigned</span>
+                  <button class="subtle-link" id="addAssessmentBottomBtn" type="button">+ Add another assessment</button>
+                </div>
+              </article>
+            </div>
+
+            <aside class="planner-column">
+              <article class="planner-card goal-card">
+                <div class="planner-card-heading"><div class="planner-icon goal-icon">◎</div><div><h3>Grade goal</h3><p>Choose the final grade you're aiming for.</p></div></div>
+                <div class="goal-number-row"><label for="goalInput">My target</label><div class="goal-input-wrap"><input id="goalInput" type="number" min="0" max="100" step="0.5" value="90" aria-label="Target final grade"><span>%</span></div></div>
+                <input class="range-input goal-range" id="goalRange" type="range" min="50" max="100" step="1" value="90" aria-label="Target grade slider">
+                <div class="range-labels"><span>50%</span><span>100%</span></div>
+                <div class="required-box" id="requiredBox">
+                  <div class="required-label">AVERAGE NEEDED ON REMAINING WORK</div>
+                  <div class="required-number" id="requiredAverage">92.2<span>%</span></div>
+                  <p id="requiredMessage">That's the average you'll need across all remaining course work.</p>
+                </div>
+              </article>
+
+              <article class="planner-card whatif-card">
+                <div class="planner-card-heading"><div class="planner-icon whatif-icon">✳</div><div><h3>What if?</h3><p>Try a score and see how your final grade changes.</p></div></div>
+                <div class="whatif-control"><div class="range-caption"><label for="whatIfRange">Average on remaining work</label><strong id="whatIfValue">90%</strong></div><input class="range-input" id="whatIfRange" type="range" min="0" max="100" step="1" value="90"></div>
+                <div class="projection-row"><span>Projected final grade</span><strong id="projectedGrade">89.0%</strong></div>
+                <div class="projection-track"><div id="projectionBar" style="width:89%"></div><span class="projection-goal-marker" id="projectionGoalMarker" style="left:90%"></span></div>
+                <p class="projection-note" id="projectionNote">A 90% average on remaining work puts you close to your goal.</p>
+              </article>
+
+              <article class="planner-card next-card">
+                <div class="planner-card-heading"><div class="planner-icon next-icon">↗</div><div><h3>Plan your next score</h3><p>Find the score you need on one assessment.</p></div></div>
+                <label class="field-label" for="nextAssessmentSelect">Choose an upcoming assessment</label>
+                <select id="nextAssessmentSelect" class="select-control"><option value="">No upcoming assessments</option></select>
+                <div class="whatif-control next-assumption"><div class="range-caption"><label for="otherAverageRange">Expected average on everything else</label><strong id="otherAverageValue">90%</strong></div><input class="range-input" id="otherAverageRange" type="range" min="0" max="100" step="1" value="90"></div>
+                <div class="next-result" id="nextResult"><span>Score needed on this assessment</span><strong id="nextNeededScore">—</strong></div>
+                <p class="small-note" id="nextResultNote">Choose an upcoming assessment to calculate a target score.</p>
+              </article>
+            </aside>
+          </div>
+        </section>
+
+        <section class="empty-state" id="emptyState" hidden>
+          <div class="empty-illustration"><div class="empty-paper"><span></span><span></span><span></span><i>✓</i></div></div>
+          <h2>Start with your own courses.</h2>
+          <p>Your workspace is empty until you add your classes. Add a course, then enter each test, quiz, assignment or project and its weight. GradePath will calculate your standing and the scores you need to reach your goal.</p>
+          <button class="primary-button" id="emptyAddCourseBtn" type="button"><span class="button-plus">+</span> Add your first course</button>
+        </section>
+        <footer class="main-footer"><span>Made for the goals you're working toward.</span><span>GradePath <b>·</b> Your grades are saved privately in this browser.</span></footer>
+      </main>
+    </div>
+  </div>
+
+  <dialog class="modal" id="courseDialog">
+    <form id="courseForm" method="dialog">
+      <div class="modal-header"><div><div class="eyebrow">COURSE DETAILS</div><h2 id="courseDialogTitle">Add a course</h2></div><button class="modal-close" type="button" data-close="courseDialog" aria-label="Close">×</button></div>
+      <label class="field-label" for="courseNameInput">Course name</label>
+      <input class="text-input" id="courseNameInput" maxlength="60" placeholder="e.g. Biology 101" required>
+      <label class="field-label" for="courseTargetInput">Target final grade</label>
+      <div class="input-suffix"><input class="text-input" id="courseTargetInput" type="number" min="0" max="100" step="0.5" value="90" required><span>%</span></div>
+      <label class="field-label">Course colour</label>
+      <div class="color-options" id="courseColorOptions">
+        <label><input type="radio" name="courseColor" value="purple" checked><span class="color-dot purple-dot"></span><span class="sr-only">Purple</span></label>
+        <label><input type="radio" name="courseColor" value="blue"><span class="color-dot blue-dot"></span><span class="sr-only">Blue</span></label>
+        <label><input type="radio" name="courseColor" value="green"><span class="color-dot green-dot"></span><span class="sr-only">Green</span></label>
+        <label><input type="radio" name="courseColor" value="orange"><span class="color-dot orange-dot"></span><span class="sr-only">Orange</span></label>
+        <label><input type="radio" name="courseColor" value="pink"><span class="color-dot pink-dot"></span><span class="sr-only">Pink</span></label>
+      </div>
+      <div class="modal-actions"><button class="secondary-button" type="button" data-close="courseDialog">Cancel</button><button class="primary-button" type="submit">Save course</button></div>
+      <p class="form-error" id="courseFormError" role="alert"></p>
+    </form>
+  </dialog>
+
+  <dialog class="modal" id="assessmentDialog">
+    <form id="assessmentForm" method="dialog">
+      <div class="modal-header"><div><div class="eyebrow">COURSE WORK</div><h2 id="assessmentDialogTitle">Add an assessment</h2></div><button class="modal-close" type="button" data-close="assessmentDialog" aria-label="Close">×</button></div>
+      <label class="field-label" for="assessmentNameInput">Assessment name</label>
+      <input class="text-input" id="assessmentNameInput" maxlength="80" placeholder="e.g. Unit 2 test" required>
+      <div class="form-grid-two">
+        <div><label class="field-label" for="assessmentTypeInput">Type</label><select class="select-control" id="assessmentTypeInput"><option>Test</option><option>Quiz</option><option>Assignment</option><option>Project</option><option>Exam</option><option>Lab</option><option>Other</option></select></div>
+        <div><label class="field-label" for="assessmentWeightInput">Weight in course</label><div class="input-suffix"><input class="text-input" id="assessmentWeightInput" type="number" min="0.1" max="100" step="0.1" placeholder="10" required><span>%</span></div></div>
+      </div>
+      <div class="form-grid-two">
+        <div><label class="field-label" for="assessmentScoreInput">Grade <span class="optional-label">(leave blank if upcoming)</span></label><div class="input-suffix"><input class="text-input" id="assessmentScoreInput" type="number" min="0" max="100" step="0.1" placeholder="Not graded"><span>%</span></div></div>
+        <div><label class="field-label" for="assessmentDateInput">Due date <span class="optional-label">(optional)</span></label><input class="text-input" id="assessmentDateInput" type="date"></div>
+      </div>
+      <p class="helper-text" id="assessmentWeightHelp">Weights are percentages of your final course grade. All assessments plus any unassigned weight should add up to 100%.</p>
+      <p class="form-error" id="assessmentFormError" role="alert"></p>
+      <div class="modal-actions modal-actions-split"><button class="danger-text-button" id="deleteAssessmentBtn" type="button" hidden>Delete assessment</button><div><button class="secondary-button" type="button" data-close="assessmentDialog">Cancel</button><button class="primary-button" type="submit">Save assessment</button></div></div>
+    </form>
+  </dialog>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+</body>
+</html>
